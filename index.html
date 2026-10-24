@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0A1424">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self'; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
+<script src="js/tema-init.js"></script>
+<title>Caderno de Acessos</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Caderno">
+<link rel="stylesheet" href="css/temas.css">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/layout.css">
+<link rel="stylesheet" href="css/cards.css">
+<link rel="stylesheet" href="css/telas.css">
+<link rel="stylesheet" href="css/componentes.css">
+<link rel="stylesheet" href="css/shell.css">
+</head>
+<body class="travado">
+<section id="login" class="login">
+  <form id="loginForm" class="login-box" autocomplete="off">
+    <img src="icons/icon-192.png" alt="" class="login-logo" width="56" height="56">
+    <h1>Caderno de Acessos</h1>
+    <p class="login-sub" id="loginSub">Digite a senha deste aparelho.</p>
+    <div id="loginPasso1">
+      <label class="login-campo" id="loginMatWrap" hidden><span class="login-rot">Matrícula</span>
+        <span class="senha-campo"><input id="loginMatricula" type="text" placeholder="Ex.: A1023" autocomplete="username" autocapitalize="characters" spellcheck="false" maxlength="40" aria-label="Matrícula"></span>
+      </label>
+      <label class="login-campo"><span class="login-rot" id="loginDica" hidden>Senha pessoal</span>
+        <span class="senha-campo login-senha">
+          <input id="loginSenha" type="password" placeholder="Senha de acesso" autocomplete="current-password" aria-label="Senha de acesso">
+          <button type="button" class="olho" id="loginOlho" aria-label="Mostrar senha" data-alvo="loginSenha" data-ic="eye"></button>
+        </span>
+      </label>
+    </div>
+    <div id="loginPasso2" hidden>
+      <h2 class="login-passo2-tit" id="lnTitulo">Crie sua senha</h2>
+      <p class="login-sub">Você entrou com uma senha temporária. Crie agora a sua senha pessoal.</p>
+      <label class="login-campo"><span class="login-rot">Nova senha</span>
+        <span class="senha-campo"><input id="lnNova" type="password" autocomplete="new-password" aria-label="Nova senha"><button type="button" class="olho" aria-label="Mostrar senha" data-alvo="lnNova" data-ic="eye"></button></span>
+      </label>
+      <label class="login-campo"><span class="login-rot">Confirmar nova senha</span>
+        <span class="senha-campo"><input id="lnConf" type="password" autocomplete="new-password" aria-label="Confirmar nova senha"><button type="button" class="olho" aria-label="Mostrar senha" data-alvo="lnConf" data-ic="eye"></button></span>
+      </label>
+      <p class="hint login-regras">Mínimo de 8 caracteres, com letra maiúscula, minúscula, número e símbolo.</p>
+    </div>
+    <button type="submit" id="loginBtn">Abrir caderno</button>
+    <button type="button" class="link-discreto login-voltar" id="loginVoltar" hidden>‹ Voltar</button>
+    <p id="loginErro" class="login-erro" role="alert"></p>
+    <p class="login-rodape" id="loginRodape">Caderno de Acessos v2.5.0 · © Todos os direitos reservados · Desenv. WebDev</p>
+    <p class="login-instalar" id="loginInstalarWrap" hidden><button type="button" class="link-instalar" id="btnInstalarApp">Instalar app</button></p>
+  </form>
+</section>
+<div id="app">
+<header class="topo">
+  <button type="button" class="voltar-cards so-mobile" id="btnVoltarCards" data-ir="equipe"><span data-ic="back"></span>Cards</button>
+  <div class="marca">
+    <img src="icons/icon-192.png" alt="" class="logo" width="32" height="32">
+    <div class="marca__tx"><h1>Caderno de Acessos</h1><small class="sync-topo" id="syncTopo"></small></div>
+  </div>
+  <span class="chip-sover" id="chipSoVer" hidden><span data-ic="eye"></span>Só ver</span>
+  <button type="button" class="sync-btn" id="btnSync" hidden><span data-ic="refresh"></span><span class="sync-txt"><strong>Sincronizar</strong><small id="syncInfo">Ainda não sincronizado</small></span></button>
+  <div class="conta">
+    <button type="button" class="conta-btn" id="btnConta" aria-haspopup="menu" aria-expanded="false" aria-controls="contaMenu"><span class="conta-av" id="contaAv">?</span><span class="conta-nome" id="contaNome">Conta</span><span class="conta-seta" aria-hidden="true">▾</span></button>
+    <div class="conta-menu" id="contaMenu" role="menu" hidden></div>
+  </div>
+</header>
+<nav class="abas" id="abas" aria-label="Navegação">
+  <div class="nav-grupo nav-cards">
+    <p class="nav-tit">Cards</p>
+    <button type="button" data-aba="equipe" class="on"><span data-ic="users"></span><span class="nav-rot">Equipe</span></button>
+    <button type="button" data-aba="meu"><span data-ic="user"></span><span class="nav-rot">Meus</span></button>
+    <button type="button" data-aba="vencendo"><span data-ic="clock"></span><span class="nav-rot">Vencendo</span> <span class="cont" id="contVenc"></span></button>
+    <button type="button" data-aba="arquivo"><span data-ic="archive"></span><span class="nav-rot">Arquivo</span></button>
+    <button type="button" data-aba="gerador"><span data-ic="key"></span><span class="nav-rot">Gerador</span></button>
+  </div>
+  <div class="nav-grupo nav-adm" id="navArea" hidden>
+    <p class="nav-tit">Administrador</p>
+    <button type="button" data-aba="adm-pessoas"><span data-ic="users"></span><span class="nav-rot">Pessoas</span></button>
+    <button type="button" data-aba="adm-perfis"><span data-ic="shield"></span><span class="nav-rot">Perfis</span></button>
+    <button type="button" data-aba="adm-logs"><span data-ic="list"></span><span class="nav-rot">Logs</span></button>
+    <button type="button" data-aba="adm-config"><span data-ic="gear"></span><span class="nav-rot">Configurações</span></button>
+    <button type="button" data-aba="adm-novidades"><span data-ic="star"></span><span class="nav-rot">Novidades</span></button>
+    <button type="button" class="nav-voltar" data-ir="equipe"><span data-ic="back"></span><span class="nav-rot">Voltar aos cards</span></button>
+  </div>
+  <button type="button" class="nav-rodape" id="navRodape" title="Sincronizar agora"><span class="nav-rodape__dot" aria-hidden="true"></span><span class="nav-rodape__tx"><b id="navSync">Só neste aparelho</b><small id="navSyncSub" hidden></small></span></button>
+</nav>
+<div class="barra-busca" id="barraBusca">
+  <div class="busca-wrap" id="buscaWrap">
+    <span class="busca-ic" data-ic="search"></span>
+    <input id="busca" type="search" placeholder="Buscar acessos..." aria-label="Buscar acessos">
+  </div>
+  <button type="button" class="tb-btn pri so-desktop" id="dNovo" title="Criar um novo acesso"><span data-ic="plus"></span>Novo</button>
+</div>
+<main id="lista"></main>
+<button class="fab so-mobile" id="novo" type="button" aria-label="Novo acesso" title="Novo acesso" data-ic="plus"></button>
+<input type="file" id="imp" accept=".json,application/json" hidden>
+<input type="file" id="impXls" accept=".xlsx,.xls,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel" hidden>
+<input type="file" id="impEquipe" accept=".json,application/json" hidden>
+
+<div class="sheet" id="sheet" aria-hidden="true">
+  <form class="panel" id="ficha" autocomplete="off" novalidate>
+    <div class="panel-topo">
+      <h3 id="fichaTitulo">Novo acesso</h3>
+      <button type="button" class="ico-btn escuro" id="fechar" aria-label="Fechar" data-ic="x"></button>
+    </div>
+    <div class="panel-corpo">
+      <label>Título<input id="fTitulo" placeholder="Ex.: Acesso Admin CRM Fluxo"></label>
+      <label>Aplicação
+        <select id="fAplicacao"></select>
+        <input id="fAplicacaoNova" class="nova" placeholder="Nome da nova aplicação" hidden>
+      </label>
+      <label>Cliente / operação
+        <select id="fCliente"></select>
+        <input id="fClienteNovo" class="nova" placeholder="Nome do novo cliente ou operação" hidden>
+      </label>
+      <label>Categoria
+        <select id="fCategoria"><option>Interno</option><option>Externo</option></select>
+      </label>
+      <label>Visibilidade
+        <select id="fVisibilidade"><option>Equipe</option><option>Individual</option></select>
+      </label>
+      <label>URL<input id="fUrl" type="url" placeholder="https://portal.exemplo.example" inputmode="url"></label>
+      <label>Usuário<input id="fUsuario" placeholder="seuusuario@exemplo.example" autocomplete="off"></label>
+      <label>Senha
+        <span class="senha-campo com-gerar"><input id="fSenha" type="password" autocomplete="new-password"><button type="button" class="gerar-in" id="fGerar" title="Gerar senha com as opções do Gerador" aria-label="Gerar senha">Gerar</button><button type="button" class="olho" id="fOlho" aria-label="Mostrar senha" data-ic="eye"></button></span>
+      </label>
+      <label>Ciclo (dias)
+        <select id="fCiclo"><option>30</option><option>60</option><option>90</option><option>Nunca</option></select>
+      </label>
+      <details class="mais-campos" id="maisDetalhes">
+        <summary>Mais detalhes (última troca, horário, escalonamento, observação)</summary>
+        <label>Última troca<input id="fUltima" type="date"></label>
+        <label>Horário<input id="fHorario" placeholder="Ex.: Seg–Sex 08–18"></label>
+        <div class="esc-edit" id="escEdit">
+          <div class="esc-edit-topo">
+            <strong>Escalonamento</strong>
+            <button type="button" class="btn pequeno" id="escAdd" title="Adicionar um nível de contato">+ Nível</button>
+          </div>
+          <div id="escLista" class="esc-lista"></div>
+          <p class="hint esc-hint">Níveis de contato (portal, e-mail, telefone). Dá para adicionar, editar ou excluir.</p>
+        </div>
+        <label class="esc-resumo-label">Resumo (texto livre, opcional)<textarea id="fEscalonamento" rows="2" placeholder="Opcional — o app também guarda os níveis estruturados acima"></textarea></label>
+        <label>Observação<textarea id="fObs" rows="2"></textarea></label>
+      </details>
+      <p class="aviso-ind" id="avisoInd" hidden>Acesso individual: usuário e senha ficam só neste aparelho e não vão no JSON da equipe nem no Excel.</p>
+      <p class="erro-form" id="erroForm" role="alert"></p>
+    </div>
+    <div class="panel-rodape">
+      <button type="button" class="btn" id="atualizarSenha" title="Salvar e marcar a senha como trocada hoje"><span data-ic="refresh"></span>Atualizar senha</button>
+      <button type="submit" class="btn pri" id="salvar" title="Salvar as alterações do acesso">Salvar</button>
+    </div>
+  </form>
+</div>
+
+<div class="sheet" id="sobre" aria-hidden="true">
+  <div class="panel pequeno">
+    <div class="panel-topo"><h3>Sobre</h3><button type="button" class="ico-btn escuro" data-fecha="sobre" aria-label="Fechar" data-ic="x"></button></div>
+    <div class="panel-corpo">
+      <p class="meta">Caderno de Acessos v2.5.0 · © Todos os direitos reservados · Desenv. WebDev</p>
+      <h4 class="sobre-tit">Novidades</h4>
+      <div class="sobre-novidades" id="sobreNovidades"></div>
+      <h4 class="sobre-tit">Perfis Administrador e Analista</h4>
+      <p class="meta" id="sobrePerfis">Com os perfis configurados, cada pessoa entra com a matrícula e a própria senha. O Administrador cuida da equipe na área do Administrador (menu “Administrador ▾”): Pessoas, Perfis, Logs e Configurações. O analista vê os cards da Equipe (só leitura), cuida dos próprios cards em Meus e só recebe o arquivo da equipe. As ações do Administrador saem assinadas: o nome sozinho não dá permissão. Ainda é uma proteção de tela, não um controle forte: quem tem o arquivo e a senha da equipe consegue mexer nele por fora, e apps antigos não conferem as assinaturas. Peça para todos atualizarem.</p>
+      <h4 class="sobre-tit">Para que serve</h4>
+      <p class="meta">Caderno de uso interno da equipe de suporte para guardar acessos a sistemas e fornecedores: link, login, senha, ciclo de troca e escalonamento. Funciona offline e fica salvo neste navegador, sem banco de dados.</p>
+      <h4 class="sobre-tit">Como usar</h4>
+      <ul class="sobre-lista">
+        <li><strong>Equipe</strong>: cards compartilhados com todos pela pasta da equipe.</li>
+        <li><strong>Meus</strong>: cards Individuais. Login e senha ficam só neste aparelho.</li>
+        <li><strong>Compartilhar meu card</strong>: envia nome, link, sistema, escalonamento e observações para a equipe, nunca login e senha.</li>
+        <li>Para levar as suas senhas para outro aparelho seu, use "Backup pessoal".</li>
+      </ul>
+      <h4 class="sobre-tit">Regras de uso</h4>
+      <ul class="sobre-lista">
+        <li>Uso interno da equipe, só para trabalho.</li>
+        <li>Não envie o JSON (backup ou da equipe) por e-mail nem por chat.</li>
+        <li>Bloqueie o Windows sempre que sair da mesa.</li>
+        <li>Senhas Individuais são pessoais: não passe a sua para ninguém.</li>
+        <li>Os dados ficam só no seu aparelho e na pasta da equipe. O app não usa nenhum servidor externo.</li>
+      </ul>
+    </div>
+  </div>
+</div>
+<div class="sel-bar" id="selBar" hidden>
+  <span id="selQtd">0 selecionados</span>
+  <button type="button" class="btn" id="selReativar">Reativar</button>
+  <button type="button" class="btn perigo" id="selExcluir">Excluir</button>
+  <button type="button" class="btn" id="selCancelar">Cancelar</button>
+</div>
+<div class="sheet dlg-wrap" id="dlg" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="dlgTitulo">
+  <div class="dlg">
+    <h3 id="dlgTitulo"></h3>
+    <p id="dlgTexto"></p>
+    <div class="dlg-botoes">
+      <button type="button" class="btn" id="dlgCancelar">Cancelar</button>
+      <button type="button" class="btn pri" id="dlgOk">OK</button>
+    </div>
+  </div>
+</div>
+
+<div class="sheet dlg-wrap" id="dlgSenha" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="dlgSenhaTitulo">
+  <form class="dlg dlg-senha" id="formTrocaSenha" autocomplete="off" novalidate>
+    <h3 id="dlgSenhaTitulo">Trocar senha</h3>
+    <label>Senha atual
+      <span class="senha-campo"><input id="tsAtual" type="password" autocomplete="current-password"><button type="button" class="olho" data-alvo="tsAtual" aria-label="Mostrar senha" data-ic="eye"></button></span>
+    </label>
+    <label>Nova senha
+      <span class="senha-campo"><input id="tsNova" type="password" autocomplete="new-password" placeholder="Nova senha"><button type="button" class="olho" data-alvo="tsNova" aria-label="Mostrar senha" data-ic="eye"></button></span>
+    </label>
+    <label>Confirmar nova
+      <span class="senha-campo"><input id="tsConf" type="password" autocomplete="new-password" placeholder="Repita a nova senha"><button type="button" class="olho" data-alvo="tsConf" aria-label="Mostrar senha" data-ic="eye"></button></span>
+    </label>
+    <p class="aviso-forte" id="tsAviso" hidden>Por segurança, troque a senha padrão antes de continuar. A senha padrão deixa de funcionar neste aparelho.</p>
+    <p class="hint" id="tsRegras">A nova senha precisa ter: no mínimo 8 caracteres, 1 letra maiúscula, 1 número e 1 caractere especial.</p>
+    <p class="erro-form" id="tsErro" role="alert"></p>
+    <div class="dlg-botoes">
+      <button type="button" class="btn" id="tsCancelar">Cancelar</button>
+      <button type="submit" class="btn pri" id="tsSalvar">Salvar</button>
+    </div>
+  </form>
+</div>
+<div class="sheet dlg-wrap" id="dlgNovidades" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="nvTitulo">
+  <div class="dlg nv-box">
+    <h3 id="nvTitulo">Novidades</h3>
+    <div class="nv-d" id="nvData"></div>
+    <div id="nvCorpo"></div>
+    <button type="button" class="btn pri nv-ok" id="nvEntendi">Entendi</button>
+  </div>
+</div>
+<div class="sheet dlg-wrap" id="dlgMod" aria-hidden="true" role="dialog" aria-modal="true"><div class="dlg dlg-mod"></div></div>
+<div class="sheet dlg-wrap" id="dlgPerfis" aria-hidden="true" role="dialog" aria-modal="true"><div class="dlg dlg-mod"></div></div>
+<div class="sheet dlg-wrap" id="dlgSE" aria-hidden="true" role="dialog" aria-modal="true"><div class="dlg dlg-mod"></div></div>
+<div class="sheet dlg-wrap" id="dlgVer" aria-hidden="true" role="dialog" aria-modal="true"><div class="dlg dlg-mod"></div></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+</div>
+
+<div class="sheet dlg-wrap" id="dlgInstalar" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="instTitulo">
+  <div class="dlg dlg-senha dlg-padrao dlg-instalar" id="instCaixa"></div>
+</div>
+<script src="js/sync.js"></script>
+<script src="js/cripto-equipe.js"></script>
+<script src="js/dados.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/armazenamento.js"></script>
+<script src="js/cards.js"></script>
+<script src="js/escalonamento.js"></script>
+<script src="js/lista.js"></script>
+<script src="js/lixeira.js"></script>
+<script src="js/conflitos.js"></script>
+<script src="js/historico.js"></script>
+<script src="js/sincronizacao.js"></script>
+<script src="js/senha-equipe.js"></script>
+<script src="js/assinatura.js"></script>
+<script src="js/perfis.js"></script>
+<script src="js/gestao.js"></script>
+<script src="js/compartilhados.js"></script>
+<script src="js/mais.js"></script>
+<script src="js/gerador.js"></script>
+<script src="js/importar-exportar.js"></script>
+<script src="js/planilhas.js"></script>
+<script src="js/ficha.js"></script>
+<script src="js/login-bloqueio.js"></script>
+<script src="js/instalar.js"></script>
+<script src="js/area.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
