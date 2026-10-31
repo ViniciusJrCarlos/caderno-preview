@@ -7,15 +7,20 @@ document.addEventListener("pointerdown", () => { ignorarClique = false; }, true)
 document.addEventListener("click", (ev) => { if (!ev.target.closest(".menu-card")) fecharMenus(); });
 document.addEventListener("click", () => { if (renderPendente) setTimeout(renderSePendente, 50); });
 /* ---------- v1.9.3+: Novidades (texto vai junto com o app; mais recente primeiro) ---------- */
-const APP_VERSAO = "2.5.3";
+const APP_VERSAO = "3.0.0";
 const NOVIDADES_VISTA = "caderno-novidades-vista";
 const NOVIDADES = [
-  { v: "2.5.3", data: "28/10/2026", itens: [
-    "A sua senha pessoal não volta mais para a temporária quando o Administrador edita, desbloqueia, reativa ou muda o seu perfil. Só \u201cResetar senha\u201d cria uma temporária nova.",
-    "A troca da sua senha vai para o arquivo da equipe (com prova de que foi você) e vale nos outros aparelhos depois da sincronização.",
-    "Na entrada, matrícula que não existe e senha errada dão a mesma mensagem, com a mesma contagem de tentativas.",
-    "A matrícula de uma pessoa excluída não pode ser usada de novo.",
-    "Para resetar, desativar, rebaixar, excluir ou desbloquear outro Administrador, o app pede a sua senha."
+  { v: "3.0.0", data: "28/10/2026", itens: [
+    "Analista edita senha, datas/ciclo e escalonamento dos cards da Equipe e isso vai para o arquivo da equipe (URL, tipo e arquivar seguem só do Administrador).",
+    "Sem a pergunta “São meus?”: os Meus deste navegador voltam a aparecer. Novo: Administrador › Selecionar e enviar (cards para um ou mais analistas).",
+    "Matrícula só com números (6 ou 7 dígitos).",
+    "Cada aba tem a sua identidade: admin e analista em abas diferentes não se misturam (menu, log e último acesso).",
+    "Entrar lê o arquivo da equipe: reset do Administrador libera o analista depois do F5 + Entrar; o bloqueio por 5 erros vai na hora para o arquivo.",
+    "Aviso “Arquivo gravado por uma versão mais nova” com saída segura do Administrador (confirma a senha, fica no log).",
+    "Último acesso do analista gravado na sincronização."
+  ] },
+  { v: "2.5.4", data: "28/10/2026", itens: [
+    "v2.5.4: corrige sincronização travada após a volta da v2.5.3 (mesmo código da v2.5.2)."
   ] },
   { v: "2.5.2", data: "28/10/2026", itens: [
     "Cards individuais (Meus) agora têm dono: cada pessoa só vê os seus, mesmo usando o mesmo navegador. Cards de antes desta versão aparecem uma vez com a pergunta \u201cSão seus?\u201d.",
@@ -39,7 +44,7 @@ const NOVIDADES = [
     "Senha temporária: na primeira entrada, o app pede para criar a sua senha ali mesmo.",
     "Administrador: menu “Administrador ▾” com Pessoas, Perfis, Logs, Configurações e Novidades. A aba Mais e o selo amarelo saíram.",
     "Pessoas: busca por matrícula, ativar/desativar, Resetar senha, Desbloquear, Editar e Excluir (só depois de desativar).",
-    "Analista: Equipe só para ver; Meus continua só no aparelho. A sincronização só recebe o que o Administrador assinou, recusa e avisa o resto e nunca apaga nada.",
+    "Analista: atualiza senha, ciclo, datas e escalonamento na Equipe; Meus continua só no aparelho. A sincronização só recebe o que o Administrador assinou, recusa e avisa o resto e nunca apaga nada.",
     "No celular: receba o arquivo que o Administrador envia em Arquivo e backup › Receber arquivo da equipe.",
     "Nova tela de instalação com o passo a passo do seu aparelho."
   ], fazer: "Entre com a matrícula que o Administrador cadastrou. Quem veio da v2.4.0 sem matrícula entra digitando o nome no campo Matrícula até o Administrador cadastrar." },

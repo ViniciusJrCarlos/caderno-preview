@@ -16,14 +16,14 @@ const MAX_TENTATIVAS = 5;                              // v2.4.0: 5 erros seguid
 const PERFIS_ITER = 310000;                     // o mesmo padrão da senha de login
 const DICA_ADMIN = "Só o Administrador pode alterar";
 /* Campos do card da Equipe que o analista pode mudar. Observações e horário do card ficam só leitura (fácil de ajustar aqui). */
-const CAMPOS_ANALISTA = []; // v2.5.0: a Equipe é só leitura para o analista (antes: escalonamento, senha, datas e ciclo)
+const CAMPOS_ANALISTA = ["escalonamentos", "escalonamento", "senha", "ultima", "senha_atualizada_em", "ciclo"]; // restaurado da v2.3.0: analista edita senha, ciclo, datas e escalonamento
 const CAMPOS_META = new Set(["id", "updatedAt", "updatedBy", "baseAt", "assin"]);
 let modoAdmin = false;          // só em memória: some no bloqueio, no logout e ao fechar/recarregar a página
 let baseEquipe = null;          // foto dos cards da Equipe aceitos (para desfazer o que o analista não pode mudar)
 let tentativasAdmin = 0, esperaAdminAte = 0;
 const PRESENCA_MS = 15 * 6e4;   // v2.5.1 (item 4): no máximo uma gravação de presença a cada 15 min
 
-const SEGREDOS_PERFIL = ["adminHash", "adminSalt", "adminIter", "chavePriv", "chaveSalt", "senhaHash", "senhaIter", "senhaBase"]; // v2.5.3: senhaBase (hash da temporária do último Resetar senha) também é segredo // v2.4.0: senhaSalt fica na cópia pública (não é segredo; marca a senha atual);
+const SEGREDOS_PERFIL = ["adminHash", "adminSalt", "adminIter", "chavePriv", "chaveSalt", "senhaHash", "senhaIter"]; // v2.4.0: senhaSalt fica na cópia pública (não é segredo; marca a senha atual);
 function semHash(p) { const o = Object.assign({}, p); SEGREDOS_PERFIL.forEach((k) => delete o[k]); return o; }
 function lerPerfis() { return window.CadernoSync ? CadernoSync.limparPerfis(lerJSON(PERFIS_KEY, [])).map(semHash) : []; }
 /* Grava a lista: a parte pública em texto e a completa (com hashes) só cifrada com a chave da equipe deste aparelho. */
@@ -49,8 +49,7 @@ async function perfisCompletos() {
     const c = cofre.get(p.id); if (!c) return p;
     let o = p;
     if (p.papel === "admin" && c.adminHash) o = Object.assign({}, p, { adminHash: c.adminHash, adminSalt: c.adminSalt, adminIter: c.adminIter }, c.chavePriv && (!p.chavePub || p.chavePub === c.chavePub) ? { chavePub: c.chavePub, chavePriv: c.chavePriv, chaveSalt: c.chaveSalt } : {});
-    if (c.senhaHash && c.senhaSalt === p.senhaSalt && (c.senhaEm || "") === (p.senhaEm || "") && (p.senhaV === 2 || c.updatedAt === p.updatedAt)) o = Object.assign({}, o, { senhaHash: c.senhaHash, senhaSalt: c.senhaSalt, senhaIter: c.senhaIter }); // v2.4.0; v2.5.3: a senha pessoal tem data própria
-    if (c.senhaBase && (c.senhaReset || "") === (p.senhaReset || "")) o = Object.assign({}, o, { senhaBase: c.senhaBase }); // v2.5.3
+    if (c.senhaHash && c.updatedAt === p.updatedAt) o = Object.assign({}, o, { senhaHash: c.senhaHash, senhaSalt: c.senhaSalt, senhaIter: c.senhaIter }); // v2.4.0
     return o;
   });
 }
@@ -66,12 +65,16 @@ function perfilPorNome(nome, l) {
  * senha pessoal (PESSOAL_CONF_KEY) e o Administrador com a senha de Administrador (ADMIN_CONF_KEY ou id gravado no "Entrar como"). */
 function meuPerfil(l) {
   l = l || lerPerfis();
-  const id = Dados.texto(PERFIL_ID_KEY);
+  // v3.0.0 (item 4): a identidade é a da sessão DESTA aba (sessionStorage); o id compartilhado só vale numa aba sem login por perfil
+  const sid = typeof sessaoPerfilId !== "undefined" && sessaoPerfilId ? sessaoPerfilId : "";
+  const id = sid || Dados.texto(PERFIL_ID_KEY);
   const p = id ? l.find((x) => x.id === id) : null;
   if (!p) return null;
+  if (sid && p.papel !== "admin" && sessaoSaltAba() === (p.senhaSalt || "")) return p; // senha pessoal conferida nesta aba
   if (p.papel !== "admin" && Dados.texto(PESSOAL_CONF_KEY) !== p.id + "|" + (p.senhaSalt || "") && !adminConfirmado(p.id)) return null; // analista sem a senha pessoal (ou a senha foi resetada)
   return p;
 }
+function sessaoSaltAba() { try { const s = sessionStorage.getItem(SESSAO) || ""; return s.indexOf("p:") === 0 ? s.split(":")[2] || "" : null; } catch (e) { return null; } }
 function adminConfirmado(id) { return !!id && Dados.texto(ADMIN_CONF_KEY) === id; }
 /* v2.3.0 (item 1): o arquivo da equipe tem perfis, mas eles ainda não chegaram aqui (arquivo cifrado sem a senha, primeira sincronização). */
 function perfisNoArquivo() { return Dados.texto(PERFIS_NO_ARQUIVO_KEY) === "1"; }
@@ -247,31 +250,13 @@ function novoIdPerfil() { return "pf-" + Date.now().toString(36) + Math.random()
 async function hashAdmin(senha) { const salt = saltAleatorio(); return { adminHash: await derivarSenha(senha, salt, PERFIS_ITER), adminSalt: salt, adminIter: PERFIS_ITER }; }
 async function alterarPerfil(id, mud, texto) {
   const l = await perfisCompletos(); const p = l.find((x) => x.id === id); if (!p) return null;
-  const agora = new Date().toISOString();
-  Object.assign(p, mud, { updatedAt: agora, updatedBy: autor() });
-  // v2.5.3 (item 1): a senha pessoal vira unidade própria (senhaV 2). O Administrador só mexe nela com "Resetar senha" (temporária nova,
-  // senhaReset/senhaBase assinados) ou ao excluir; editar, desbloquear, reativar, bloqueio e papel não tocam na senha do analista.
-  if (p.papel !== "admin" || p.senhaV === 2) {
-    if (mud.senhaTemp === true && mud.senhaHash) { p.senhaReset = agora; p.senhaBase = mud.senhaHash; p.senhaEm = agora; delete p.senhaProva; }
-    else if (Object.prototype.hasOwnProperty.call(mud, "senhaHash") && !mud.senhaHash) { p.senhaReset = agora; delete p.senhaBase; delete p.senhaEm; delete p.senhaProva; delete p.senhaHash; delete p.senhaSalt; delete p.senhaIter; delete p.senhaTemp; }
-    else if (p.senhaV !== 2 && p.senhaTemp && p.senhaHash && !p.senhaBase) p.senhaBase = p.senhaHash; // perfil de antes: a temporária vira a base (sem mudar senhaReset)
-    p.senhaV = 2;
-  }
+  Object.assign(p, mud, { updatedAt: new Date().toISOString(), updatedBy: autor() });
   if (p.papel !== "admin") { delete p.adminHash; delete p.adminSalt; delete p.adminIter; delete p.chavePub; delete p.chavePriv; delete p.chaveSalt; delete p.trocarSenha; }
   if (!adminsAtivos(l).length) { toast("Não dá para remover, desativar ou rebaixar o último Administrador"); return null; }
   await assinarPerfil(p); // v2.4.0: mudança feita com a chave do Administrador aberta sai assinada
   if (p.papel === "admin" && p.chavePub && chaveAdmin && chaveAdmin.pid !== p.id) { const pn = pinsChaves(); pn[p.id] = p.chavePub; Dados.gravarTexto(CHAVES_PIN_KEY, JSON.stringify(pn)); }
   await gravarPerfis(l); if (texto) histPerfil(texto);
   agendarSync(); return p;
-}
-/* v2.5.3 (item 1): a própria pessoa troca a senha pessoal sem mexer no resto do perfil (nem no updatedAt assinado pelo Administrador).
- * A troca leva a prova (HMAC com a base do último Resetar senha) e viaja para o arquivo da equipe junto com a presença. */
-async function gravarSenhaPropria(id, h) {
-  const l = await perfisCompletos(); const p = l.find((x) => x.id === id); if (!p) return null;
-  if (p.senhaV !== 2 || !p.senhaBase) return alterarPerfil(id, Object.assign({}, h, { senhaTemp: false, senhaEm: new Date().toISOString() }), ""); // perfil de antes da v2.5.3
-  Object.assign(p, h, { senhaEm: new Date().toISOString() }); delete p.senhaTemp; delete p.senhaProva;
-  p.senhaProva = await provaSenhaPropria(p);
-  await gravarPerfis(l); agendarSync(); return p;
 }
 /* ---------- Modo admin ---------- */
 function sairModoAdmin(silencioso) {
@@ -528,7 +513,7 @@ function aplicarTravasFicha(it) {
   if (!it) { $("fVisibilidade").value = "Individual"; $("avisoInd").hidden = false; edit.visibilidade = "Individual"; travar("fVisibilidade"); return; }
   if (!compartilhado(it)) { travar("fVisibilidade"); return; } // card de Meus não vira card da Equipe
   CAMPOS_FICHA_ADMIN.forEach(travar);
-  if (papel === "leitura" || papel === "analista") { CAMPOS_FICHA_ANALISTA.forEach(travar); sheet.classList.add("ficha-leitura"); $("fichaTitulo").textContent = "Ver acesso (só leitura)"; sheet.querySelectorAll("#escEdit input, #escEdit select, #escEdit textarea, #escEdit button").forEach((x) => { x.disabled = true; x.setAttribute("data-trava", "1"); x.title = DICA_ADMIN; }); }
+  if (papel === "leitura") { CAMPOS_FICHA_ANALISTA.forEach(travar); sheet.classList.add("ficha-leitura"); $("fichaTitulo").textContent = "Ver acesso (só leitura)"; sheet.querySelectorAll("#escEdit input, #escEdit select, #escEdit textarea, #escEdit button").forEach((x) => { x.disabled = true; x.setAttribute("data-trava", "1"); x.title = DICA_ADMIN; }); } else if (papel === "analista") { $("fichaTitulo").textContent = "Editar acesso (operação)"; }
 }
 /* Importação: o analista não importa para a Equipe (os cards da Equipe do arquivo ficam de fora). */
 function filtrarImportacaoEquipe(lista) {

@@ -38,7 +38,7 @@
     </div>
     <div id="loginPasso1">
       <label class="login-campo" id="loginMatWrap" hidden><span class="login-rot">Matrícula</span>
-        <span class="senha-campo"><input id="loginMatricula" type="text" placeholder="Ex.: A1023" autocomplete="username" autocapitalize="characters" spellcheck="false" maxlength="40" aria-label="Matrícula"></span>
+        <span class="senha-campo"><input id="loginMatricula" type="text" placeholder="Ex.: 1234567" autocomplete="username" autocapitalize="characters" spellcheck="false" maxlength="40" aria-label="Matrícula"></span>
       </label>
       <label class="login-campo"><span class="login-rot" id="loginDica" hidden>Senha pessoal</span>
         <span class="senha-campo login-senha">
@@ -61,7 +61,7 @@
     <button type="submit" id="loginBtn">Abrir caderno</button>
     <button type="button" class="link-discreto login-voltar" id="loginVoltar" hidden>‹ Voltar</button>
     <p id="loginErro" class="login-erro" role="alert"></p>
-    <p class="login-rodape" id="loginRodape">Caderno de Acessos v2.5.3 · © Todos os direitos reservados · Desenv. WebDev</p>
+    <p class="login-rodape" id="loginRodape">Caderno de Acessos v3.0.0 · © Todos os direitos reservados · Desenv. WebDev</p>
     <p class="login-instalar" id="loginInstalarWrap" hidden><button type="button" class="link-instalar" id="btnInstalarApp">Instalar app</button></p>
   </form>
 </section>
@@ -171,11 +171,11 @@
   <div class="panel pequeno">
     <div class="panel-topo"><h3>Sobre</h3><button type="button" class="ico-btn escuro" data-fecha="sobre" aria-label="Fechar" data-ic="x"></button></div>
     <div class="panel-corpo">
-      <p class="meta">Caderno de Acessos v2.5.3 · © Todos os direitos reservados · Desenv. WebDev</p>
+      <p class="meta">Caderno de Acessos v3.0.0 · © Todos os direitos reservados · Desenv. WebDev</p>
       <h4 class="sobre-tit">Novidades</h4>
       <div class="sobre-novidades" id="sobreNovidades"></div>
       <h4 class="sobre-tit">Perfis Administrador e Analista</h4>
-      <p class="meta" id="sobrePerfis">Com os perfis configurados, cada pessoa entra com a matrícula e a própria senha. O Administrador cuida da equipe na área do Administrador (menu “Administrador ▾”): Pessoas, Perfis, Logs e Configurações. O analista vê os cards da Equipe (só leitura), cuida dos próprios cards em Meus e só recebe o arquivo da equipe. As ações do Administrador saem assinadas: o nome sozinho não dá permissão. Ainda é uma proteção de tela, não um controle forte: quem tem o arquivo e a senha da equipe consegue mexer nele por fora, e apps antigos não conferem as assinaturas. Peça para todos atualizarem.</p>
+      <p class="meta" id="sobrePerfis">Com os perfis configurados, cada pessoa entra com a matrícula e a própria senha. O Administrador cuida da equipe na área do Administrador (menu “Administrador ▾”): Pessoas, Perfis, Logs e Configurações. O analista vê os cards da Equipe e atualiza senha, ciclo, datas e escalonamento; cuida dos próprios cards em Meus e só recebe o arquivo da equipe. As ações do Administrador saem assinadas: o nome sozinho não dá permissão. Ainda é uma proteção de tela, não um controle forte: quem tem o arquivo e a senha da equipe consegue mexer nele por fora, e apps antigos não conferem as assinaturas. Peça para todos atualizarem.</p>
       <h4 class="sobre-tit">Para que serve</h4>
       <p class="meta">Caderno de uso interno da equipe de suporte para guardar acessos a sistemas e fornecedores: link, login, senha, ciclo de troca e escalonamento. Funciona offline e fica salvo neste navegador, sem banco de dados.</p>
       <h4 class="sobre-tit">Como usar</h4>
@@ -246,7 +246,6 @@
 <div class="sheet dlg-wrap" id="dlgPerfis" aria-hidden="true" role="dialog" aria-modal="true"><div class="dlg dlg-mod"></div></div>
 <div class="sheet dlg-wrap" id="dlgSE" aria-hidden="true" role="dialog" aria-modal="true"><div class="dlg dlg-mod"></div></div>
 <div class="sheet dlg-wrap" id="dlgVer" aria-hidden="true" role="dialog" aria-modal="true"><div class="dlg dlg-mod"></div></div>
-<div class="sheet dlg-wrap" id="dlgConfAdm" aria-hidden="true" role="dialog" aria-modal="true"><div class="dlg dlg-mod"></div></div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 </div>
 
