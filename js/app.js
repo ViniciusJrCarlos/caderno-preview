@@ -7,9 +7,10 @@ document.addEventListener("pointerdown", () => { ignorarClique = false; }, true)
 document.addEventListener("click", (ev) => { if (!ev.target.closest(".menu-card")) fecharMenus(); });
 document.addEventListener("click", () => { if (renderPendente) setTimeout(renderSePendente, 50); });
 /* ---------- v1.9.3+: Novidades (texto vai junto com o app; mais recente primeiro) ---------- */
-const APP_VERSAO = "3.0.10";
+const APP_VERSAO = "3.1.0";
 const NOVIDADES_VISTA = "caderno-novidades-vista";
 const NOVIDADES = [
+  { v: "3.1.0", data: "02/11/2026", itens: ["Nova aba Relatórios (só do Administrador), ao lado de Envios: resumo no topo com listas que abrem ao clicar (sem usuário e senha), ferramentas internas (URL única, URL por operação ou 1 operação), fornecedores externos, ferramenta × operação, senhas vencendo (Equipe × Meus) e perfis.", "Relatórios complementares, recolhidos: envios por pessoa e por card, cards sem escalonamento ou Resumo, sem data da última troca, próximas trocas por semana, operação × vencimento, Equipe por ciclo, atividade do Log, perfis sem acesso recente ou com versão antiga, links repetidos entre Meus e Equipe, arquivados por mês e escalonamento editado.", "Tudo é calculado na hora com os dados do app e funciona offline."] },
   { v: "3.0.10", data: "02/11/2026", itens: ["Aviso do envio mais claro: resumo no topo, quem recebeu cada card e, recolhido em “Ver detalhes”, quem já tinha (não reenviado).", "Selecionar e enviar com os mesmos destaques da aba Envios: títulos e nomes em negrito, “já recebeu” em verde e ícone no Enviar."] },
   { v: "3.0.9", data: "02/11/2026", itens: ["Nova aba Envios (só do Administrador): busca, filtros de Aplicação e Cliente/Operação, marcar todos do filtro, páginas de 25 em 25 e envio para as pessoas, com o mesmo critério do Selecionar e enviar."] },
   { v: "3.0.8", data: "01/11/2026", itens: ["Selecionar e enviar lista todos os seus cards de Meus, com o mesmo critério da aba Meus (fora: Equipe, arquivados e cards recebidos de outra pessoa)."] },
