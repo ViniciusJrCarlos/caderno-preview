@@ -1,4 +1,4 @@
-/* Caderno de Acessos — js/relatorios/principais.js (v3.1.0)
+/* Caderno de Acessos — js/relatorios/principais.js (v3.1.0 · v3.1.1: sobre + dados para o Excel)
  * Resumo do topo (com listas que abrem ao clicar) e os relatórios principais: ferramentas internas, fornecedores externos,
  * ferramenta × operação, senhas vencendo e analistas. Cada bloco é um relRegistrar() independente. */
 function relVisTxt(c) { return compartilhado(c) ? "Equipe (compartilhada)" : "Meus (individual)"; }
@@ -56,7 +56,7 @@ function relResumo(ctx, wrap) {
   wrap.appendChild(grade); wrap.appendChild(painel); abrir();
 }
 /* ---------- Ferramentas internas ---------- */
-relRegistrar({ id: "ferramentas", titulo: "Ferramentas internas", desc: "Agrupadas pela Aplicação · passe o mouse para ver as operações", aberto: true, render(ctx, c) {
+relRegistrar({ id: "ferramentas", sobre: "Ferramenta × operações: quantas operações cada ferramenta interna atende e se usa URL única, uma URL por operação ou só 1 operação.", dados(ctx) { return { cab: ["Ferramenta", "Tipo de URL", "Operações", "Qtd. operações", "Cards ativos", "URL(s)"], linhas: relOrdena(ctx.ferr).map(([, l]) => { const ops = relUnicos(l, relOp); return [relApp(l[0]), REL_TIPO_TXT[relTipoUrl(l)], ops.join(", "), ops.length, l.length, relUnicos(l, (c) => c.url).join(" | ")]; }) }; }, titulo: "Ferramentas internas", desc: "Agrupadas pela Aplicação · passe o mouse para ver as operações", aberto: true, render(ctx, c) {
   const g = relOrdena(ctx.ferr), cont = { unica: 0, op: 0, um: 0 }; g.forEach(([, l]) => cont[relTipoUrl(l)]++);
   c.innerHTML = '<div class="rel-split"><div class="rel-t-unica"><b>' + cont.unica + "</b>URL única para todas as operações</div><div class=\"rel-t-op\"><b>" + cont.op +
     "</b>URL muda por operação</div><div class=\"rel-t-um\"><b>" + cont.um + "</b>Só 1 operação</div></div>" +
@@ -64,11 +64,11 @@ relRegistrar({ id: "ferramentas", titulo: "Ferramentas internas", desc: "Agrupad
       tip: relApp(l[0]) + "\n" + ops.length + (ops.length === 1 ? " operação: " : " operações: ") + ops.join(", ") + "\n" + { um: "1 operação", unica: "Mesma URL para todas", op: "Uma URL por operação" }[relTipoUrl(l)] }; }), "var(--teal)");
 } });
 /* ---------- Fornecedores externos ---------- */
-relRegistrar({ id: "fornecedores", titulo: "Fornecedores externos ativos", desc: "Cards ativos por fornecedor", aberto: true, render(ctx, c) {
+relRegistrar({ id: "fornecedores", sobre: "Fornecedor × cards: quantos cards ativos cada fornecedor externo tem e em quais operações.", dados(ctx) { return { cab: ["Fornecedor", "Operações", "Cards ativos", "URL(s)", "Resumo"], linhas: relOrdena(ctx.forn).map(([, l]) => [relApp(l[0]), relUnicos(l, relOp).join(", "), l.length, relUnicos(l, (c) => c.url).join(" | "), relUnicos(l, (c) => c.escalonamento).join(" · ")]) }; }, titulo: "Fornecedores externos ativos", desc: "Cards ativos por fornecedor", aberto: true, render(ctx, c) {
   c.innerHTML = relBarras(relOrdena(ctx.forn).map(([, l]) => { const ops = relUnicos(l, relOp); return { n: relApp(l[0]), v: l.length, sub: ops.length + (ops.length === 1 ? " operação" : " operações"), tip: relApp(l[0]) + "\nOperações: " + ops.join(", ") }; }), "#B4530A");
 } });
 /* ---------- Ferramenta × operação ---------- */
-relRegistrar({ id: "ferr-op", titulo: "Ferramenta × operação", desc: "Cards ativos de cada ferramenta interna por operação", aberto: true, render(ctx, c) {
+relRegistrar({ id: "ferr-op", sobre: "Ferramenta × operação: em quais operações cada ferramenta interna tem card ativo (quantidade em cada cruzamento).", dados(ctx) { const ops = relUnicos(ctx.internos, relOp).sort((a, b) => a.localeCompare(b, "pt-BR")); return { cab: ["Ferramenta", "Tipo de URL"].concat(ops), linhas: relOrdena(ctx.ferr).map(([, l]) => [relApp(l[0]), REL_TIPO_TXT[relTipoUrl(l)]].concat(ops.map((o) => l.filter((x) => relOp(x) === o).length))) }; }, titulo: "Ferramenta × operação", desc: "Cards ativos de cada ferramenta interna por operação", aberto: true, render(ctx, c) {
   const g = relOrdena(ctx.ferr), ops = relUnicos(ctx.internos, relOp).sort((a, b) => a.localeCompare(b, "pt-BR"));
   if (!g.length) { c.innerHTML = '<p class="rel-vazio">Nenhuma ferramenta interna ativa.</p>'; return; }
   const mx = Math.max(1, ...g.map(([, l]) => Math.max(...ops.map((o) => l.filter((x) => relOp(x) === o).length))));
@@ -77,7 +77,7 @@ relRegistrar({ id: "ferr-op", titulo: "Ferramenta × operação", desc: "Cards a
       return '<td data-tip="' + relEsc(q ? relApp(l[0]) + " · " + o + "\n" + q + " card(s)" : "") + '" data-st="' + (q ? "background:color-mix(in srgb, var(--teal) " + Math.round(25 + q / mx * 55) + "%, transparent)" : "") + '">' + (q || "–") + "</td>"; }).join("") + "</tr>"; }).join("") + "</tbody></table></div>";
 } });
 /* ---------- Senhas vencendo ---------- */
-relRegistrar({ id: "senhas", titulo: "Senhas vencendo", desc: "Pela data da última troca + ciclo · Equipe × Meus", aberto: true, render(ctx, c) {
+relRegistrar({ id: "senhas", sobre: "Vencimento × visibilidade: senhas por faixa de prazo (última troca + ciclo), comparando cards da Equipe e de Meus.", dados(ctx) { return { cab: ["Card", "Operação", "Tipo", "Visibilidade", "Ciclo", "Última troca", "Faixa", "Vencimento"], linhas: ctx.ativos.slice().sort((a, b) => relFaixa(a) - relFaixa(b) || (diasAte(a) || 0) - (diasAte(b) || 0)).map((x) => relLinhaCard(x).concat([x.ciclo === "Nunca" || !x.ciclo ? "Nunca" : x.ciclo + " dias", relData(x.ultima), REL_FAIXAS[relFaixa(x)], relVencTxt(x)])) }; }, titulo: "Senhas vencendo", desc: "Pela data da última troca + ciclo · Equipe × Meus", aberto: true, render(ctx, c) {
   const desenha = () => {
     const f = relEstado.filtroSenhas, l = ctx.ativos.filter((x) => f === "todos" || (f === "forn") === (x.categoria === "Externo"));
     const v = REL_FAIXAS.map((_, i) => ({ e: l.filter((x) => relFaixa(x) === i && compartilhado(x)), m: l.filter((x) => relFaixa(x) === i && !compartilhado(x)) }));
@@ -91,7 +91,7 @@ relRegistrar({ id: "senhas", titulo: "Senhas vencendo", desc: "Pela data da últ
   desenha();
 } });
 /* ---------- Analistas ---------- */
-relRegistrar({ id: "analistas", titulo: "Analistas e perfis", desc: "Ativos, desativados e bloqueados · passe o mouse para ver quem", aberto: true, render(ctx, c) {
+relRegistrar({ id: "analistas", sobre: "Perfis × status: quantos perfis estão ativos, desativados ou bloqueados, com último acesso e versão.", dados(ctx) { return { cab: ["Nome", "RE", "Papel", "Status", "Último acesso", "Versão"], linhas: ctx.pessoas.map((p) => [p.nome, p.matricula || "—", p.papel === "admin" ? "Administrador" : "Analista", relStatus(p)[1], p.ultimoAcesso ? dataHoraBR(p.ultimoAcesso) : "Nunca entrou", p.versao ? "v" + p.versao : "—"]) }; }, titulo: "Analistas e perfis", desc: "Ativos, desativados e bloqueados · passe o mouse para ver quem", aberto: true, render(ctx, c) {
   const fat = [["ativo", "Ativo", "var(--green)"], ["desativado", "Desativado", "#98A2B3"], ["bloqueado", "Bloqueado (15 min)", "var(--danger)"]].map(([k, t, cor]) => {
     const ps = ctx.pessoas.filter((p) => relStatus(p)[0] === k); return { t: t, v: ps.length, cor: cor, tip: t + ": " + ps.length + (ps.length ? "\n" + ps.map((p) => p.nome + " · RE " + (p.matricula || "—")).join("\n") : "") }; });
   c.innerHTML = relDonut(fat, ctx.pessoas.length, "perfis");

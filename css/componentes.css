@@ -501,3 +501,12 @@ body.travado .login { animation:caderno-fade .2s ease; }
 .rel-nota { font-size:12px; color:var(--muted); margin:8px 0; } .rel-nota--alerta { color:var(--red); font-weight:600; } .rel-vazio { color:var(--muted); font-size:13px; margin:4px 0; }
 .rel-tip { position:fixed; z-index:9999; display:none; max-width:280px; background:var(--toast); color:#fff; border-radius:10px; padding:9px 12px; font-size:12.5px; pointer-events:none; box-shadow:0 8px 20px var(--shadow); white-space:pre-line; } .rel-tip b { display:block; margin-bottom:3px; }
 @media (max-width:700px) { .rel-kpis { grid-template-columns:1fr 1fr; } .rel-bar__n { width:110px; } .rel-ficha dl { grid-template-columns:96px 1fr; } .rel-fichas { grid-template-columns:1fr; } .rel-split { flex-direction:column; } .rel-tab--pessoas th:nth-child(5), .rel-tab--pessoas td:nth-child(5) { display:none; } }
+/* v3.1.1: Extrair relatório + descrição de cada relatório */
+.rel-cab .rel-extrair { margin-top:8px; }
+.rel-sobre { margin:0 16px 10px; padding:8px 10px; font-size:12.5px; color:var(--text); background:color-mix(in srgb, var(--teal) 10%, transparent); border-left:3px solid var(--teal); border-radius:6px; }
+.dlg-extrair .rel-ex-todos { display:flex; gap:8px; align-items:center; font-weight:700; margin:10px 0 6px; cursor:pointer; }
+.dlg-extrair .rel-ex-lista { max-height:52vh; overflow:auto; border:1px solid var(--line2); border-radius:8px; padding:4px 8px; }
+.dlg-extrair .rel-ex-item { display:flex; gap:10px; align-items:flex-start; padding:7px 0; border-bottom:1px solid var(--line2); cursor:pointer; }
+.dlg-extrair .rel-ex-item:last-child { border-bottom:0; }
+.dlg-extrair .rel-ex-item input, .dlg-extrair .rel-ex-todos input { width:18px; height:18px; margin-top:2px; flex:none; }
+.dlg-extrair .rel-ex-item span { display:flex; flex-direction:column; gap:2px; } .dlg-extrair .rel-ex-item small { color:var(--muted); font-size:12px; }

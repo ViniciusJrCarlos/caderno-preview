@@ -80,13 +80,16 @@ function renderRelatorios(box) {
   const cab = el("article", "card painel-mais rel-cab");
   cab.appendChild(el("h3", "", "Relatórios"));
   cab.appendChild(el("p", "meta", "Panorama dos cards, operações e perfis deste aparelho, atualizado sozinho. Clique num resumo para ver a lista; passe o mouse nos gráficos para ver detalhes. Nunca mostra usuário nem senha."));
+  const bx = btn("btn", "download", "Extrair relatório", relAbrirExtrair); bx.classList.add("rel-extrair"); bx.id = "relExtrair"; cab.appendChild(bx); // v3.1.1
   wrap.appendChild(cab);
   try { relResumo(ctx, wrap); } catch (e) { console.error(e); }
   RELATORIOS.forEach((r) => {
     const d = el("details", "card painel-mais rel-bloco"); d.dataset.rel = r.id;
     d.open = relEstado.abertos[r.id] != null ? relEstado.abertos[r.id] : !!r.aberto;
     const s = el("summary", "rel-bloco__tit"); s.appendChild(el("span", "", r.titulo)); if (r.desc) s.appendChild(el("small", "", r.desc));
-    d.appendChild(s); const corpo = el("div", "rel-bloco__corpo"); d.appendChild(corpo);
+    d.appendChild(s);
+    if (r.sobre) d.appendChild(el("p", "rel-sobre", r.sobre)); // v3.1.1: o que o relatório compara
+    const corpo = el("div", "rel-bloco__corpo"); d.appendChild(corpo);
     const desenha = () => { corpo.textContent = ""; try { r.render(ctx, corpo); } catch (e) { console.error(e); corpo.appendChild(el("p", "rel-vazio", "Não foi possível montar este relatório.")); } };
     if (d.open) desenha();
     d.addEventListener("toggle", () => { relEstado.abertos[r.id] = d.open; if (d.open && !corpo.childNodes.length) desenha(); });
