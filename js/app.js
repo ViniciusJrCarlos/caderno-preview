@@ -7,9 +7,10 @@ document.addEventListener("pointerdown", () => { ignorarClique = false; }, true)
 document.addEventListener("click", (ev) => { if (!ev.target.closest(".menu-card")) fecharMenus(); });
 document.addEventListener("click", () => { if (renderPendente) setTimeout(renderSePendente, 50); });
 /* ---------- v1.9.3+: Novidades (texto vai junto com o app; mais recente primeiro) ---------- */
-const APP_VERSAO = "3.1.1";
+const APP_VERSAO = "3.1.2";
 const NOVIDADES_VISTA = "caderno-novidades-vista";
 const NOVIDADES = [
+  { v: "3.1.2", data: "03/11/2026", itens: ["Extrair relatório: os gráficos agora ficam no topo de cada aba do Excel e são gráficos de verdade, ligados à tabela: se você mudar um número na planilha, o gráfico e as caixinhas mudam junto.", "Links do Leia-me para as abas (e o “◀ Voltar”) agora funcionam também no LibreOffice."] },
   { v: "3.1.1", data: "03/11/2026", itens: ["Relatórios: novo botão “Extrair relatório” (só do Administrador). Escolha os relatórios (ou “Marcar todos”) e baixe um Excel (.xlsx) com uma aba por relatório e um Leia-me com o índice, gerado offline com os dados atuais. Nunca inclui usuário nem senha.", "Cada relatório agora começa com uma descrição curta do que ele compara (ex.: “Ferramenta × operação”), na aba e no topo da planilha."] },
   { v: "3.1.0", data: "02/11/2026", itens: ["Nova aba Relatórios (só do Administrador), ao lado de Envios: resumo no topo com listas que abrem ao clicar (sem usuário e senha), ferramentas internas (URL única, URL por operação ou 1 operação), fornecedores externos, ferramenta × operação, senhas vencendo (Equipe × Meus) e perfis.", "Relatórios complementares, recolhidos: envios por pessoa e por card, cards sem escalonamento ou Resumo, sem data da última troca, próximas trocas por semana, operação × vencimento, Equipe por ciclo, atividade do Log, perfis sem acesso recente ou com versão antiga, links repetidos entre Meus e Equipe, arquivados por mês e escalonamento editado.", "Tudo é calculado na hora com os dados do app e funciona offline."] },
   { v: "3.0.10", data: "02/11/2026", itens: ["Aviso do envio mais claro: resumo no topo, quem recebeu cada card e, recolhido em “Ver detalhes”, quem já tinha (não reenviado).", "Selecionar e enviar com os mesmos destaques da aba Envios: títulos e nomes em negrito, “já recebeu” em verde e ícone no Enviar."] },
